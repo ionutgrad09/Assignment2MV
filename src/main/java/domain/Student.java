@@ -1,7 +1,5 @@
 package domain;
 
-import java.util.Objects;
-
 public class Student implements HasID<String> {
     private String idStudent;
     private String nume;
@@ -40,17 +38,5 @@ public class Student implements HasID<String> {
         return "Student{" + "idStudent=" + idStudent + ", nume='" + nume + '\'' + ", grupa=" + grupa + '\'' + '}';
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Student student = (Student) o;
-        return Objects.equals(idStudent, student.idStudent);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(idStudent);
-    }
 }
 
