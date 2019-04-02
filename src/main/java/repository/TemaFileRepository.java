@@ -6,7 +6,6 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.stream.Collectors;
 import validation.ValidationException;
 import validation.Validator;
 
@@ -18,8 +17,10 @@ public class TemaFileRepository extends AbstractFileRepository<String, Tema> {
     }
 
     protected void loadFromFile() {
-        try (BufferedReader buffer = new BufferedReader(new FileReader(filename))) {
-            buffer.lines().collect(Collectors.toList()).forEach(line -> {
+        try {
+            BufferedReader buffer = new BufferedReader(new FileReader(filename));
+            String line = buffer.readLine();
+            while (line != null) {
                 String[] result = line.split("#");
                 Tema tema = new Tema(result[0], result[1], Integer.parseInt(result[2]), Integer.parseInt(result[3]));
                 try {
@@ -27,32 +28,36 @@ public class TemaFileRepository extends AbstractFileRepository<String, Tema> {
                 } catch (ValidationException ve) {
                     ve.printStackTrace();
                 }
-            });
+            }
+        } catch (
+                IOException ioe) {
+            ioe.printStackTrace();
+        }
+
+    }
+
+    protected void writeToFile(Tema tema) {
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(filename, true));
+            bw.write(tema.getID() + "#" + tema.getDescriere() + "#" + tema.getDeadline() + "#" + tema.getStartline()
+                    + "\n");
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
     }
 
-    protected void writeToFile(Tema tema) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename, true))) {
-            bw.write(tema.getID() + "#" + tema.getDescriere() + "#" + tema.getDeadline() + "#" + tema.getStartline() + "\n");
-        }
-        catch(IOException ioe) {
-            ioe.printStackTrace();
-        }
-    }
-
     protected void writeToFileAll() {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename, false))) {
-            super.entities.values().forEach(tema -> {
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(filename, false));
+            for (Tema tema : super.entities.values()) {
                 try {
-                    bw.write(tema.getID() + "#" + tema.getDescriere() + "#" + tema.getDeadline() + "#" + tema.getStartline() + "\n");
+                    bw.write(tema.getID() + "#" + tema.getDescriere() + "#" + tema.getDeadline() + "#" + tema
+                            .getStartline() + "\n");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            });
-        }
-        catch(IOException ioe) {
+            }
+        } catch (IOException ioe) {
             ioe.printStackTrace();
         }
     }

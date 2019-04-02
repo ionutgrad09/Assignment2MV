@@ -64,8 +64,11 @@ public abstract class AbstractXMLRepository<ID, E extends HasID<ID>> extends Abs
             Document XMLdocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
             Element root = XMLdocument.createElement("Entitati");
             XMLdocument.appendChild(root);
-
-            entities.values().forEach(entity -> root.appendChild(getElementFromEntity(entity, XMLdocument)));
+            //TODO
+            for(E entity: entities.values()){
+                root.appendChild(getElementFromEntity(entity, XMLdocument));
+            }
+//            entities.values().forEach(entity -> root.appendChild(getElementFromEntity(entity, XMLdocument)));
             Transformer XMLtransformer = TransformerFactory.newInstance().newTransformer();
             XMLtransformer.setOutputProperty(OutputKeys.INDENT, "yes");
             XMLtransformer.transform(new DOMSource(XMLdocument), new StreamResult(XMLfilename));

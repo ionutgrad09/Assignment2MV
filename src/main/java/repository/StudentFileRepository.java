@@ -6,7 +6,6 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.stream.Collectors;
 import validation.ValidationException;
 import validation.Validator;
 
@@ -18,8 +17,10 @@ public class StudentFileRepository extends AbstractFileRepository<String, Studen
     }
 
     protected void loadFromFile() {
-        try (BufferedReader buffer = new BufferedReader(new FileReader(filename))) {
-            buffer.lines().collect(Collectors.toList()).forEach(line -> {
+        try {
+            BufferedReader buffer = new BufferedReader(new FileReader(filename));
+            String line = buffer.readLine();
+            while (line != null) {
                 String[] result = line.split("#");
                 Student student = new Student(result[0], result[1], Integer.parseInt(result[2]));
                 try {
@@ -27,32 +28,33 @@ public class StudentFileRepository extends AbstractFileRepository<String, Studen
                 } catch (ValidationException ve) {
                     ve.printStackTrace();
                 }
-            });
+                line = buffer.readLine();
+            }
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
     }
 
     protected void writeToFile(Student student) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename, true))) {
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(filename, true));
             bw.write(student.getID() + "#" + student.getNume() + "#" + student.getGrupa() + "\n");
-        }
-        catch(IOException ioe) {
+        } catch (IOException ioe) {
             ioe.printStackTrace();
         }
     }
 
     protected void writeToFileAll() {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename, false))) {
-            super.entities.values().forEach(student -> {
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(filename, false));
+            for (Student student : super.entities.values()) {
                 try {
                     bw.write(student.getID() + "#" + student.getNume() + "#" + student.getGrupa() + "\n");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            });
-        }
-        catch(IOException ioe) {
+            }
+        } catch (IOException ioe) {
             ioe.printStackTrace();
         }
     }

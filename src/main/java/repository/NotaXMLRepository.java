@@ -49,8 +49,9 @@ public class NotaXMLRepository extends AbstractXMLRepository<Pair<String, String
         TemaFileRepository trepo = new TemaFileRepository(tval, "teme.txt");
 
         Student student = srepo.findOne(idStudent);
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(student.getNume() + ".txt", false))) {
-            super.findAll().forEach(nota -> {
+        try  {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(student.getNume() + ".txt", false));
+            for(Nota nota: super.findAll()){
                 if (nota.getID().getObject1().equals(idStudent)) {
                     try {
                         bw.write("Tema: " + nota.getID().getObject2() + "\n");
@@ -62,7 +63,7 @@ public class NotaXMLRepository extends AbstractXMLRepository<Pair<String, String
                         e.printStackTrace();
                     }
                 }
-            });
+            };
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }

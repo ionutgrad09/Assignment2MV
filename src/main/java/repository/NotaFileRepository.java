@@ -7,7 +7,6 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.stream.Collectors;
 import validation.ValidationException;
 import validation.Validator;
 
@@ -19,24 +18,29 @@ public class NotaFileRepository extends AbstractFileRepository<Pair<String, Stri
     }
 
     protected void loadFromFile() {
-        try (BufferedReader buffer = new BufferedReader(new FileReader(filename))) {
-            buffer.lines().collect(Collectors.toList()).forEach(line -> {
-                String[] result = line.split("#");
-                Nota nota = new Nota(new Pair(result[0], result[1]), Double.parseDouble(result[2]),
-                        Integer.parseInt(result[3]), result[4]);
-                try {
-                    super.save(nota);
-                } catch (ValidationException ve) {
-                    ve.printStackTrace();
-                }
-            });
+        try {
+            BufferedReader buffer = new BufferedReader(new FileReader(filename));
+
+            String line = buffer.readLine();
+            while (line != null) {
+                    String[] result = line.split("#");
+                    Nota nota = new Nota(new Pair(result[0], result[1]), Double.parseDouble(result[2]),
+                            Integer.parseInt(result[3]), result[4]);
+                    try {
+                        super.save(nota);
+                    } catch (ValidationException ve) {
+                        ve.printStackTrace();
+                    }
+                    line = buffer.readLine();
+            }
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
     }
 
     protected void writeToFile(Nota nota) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename, true))) {
+        try  {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(filename, true));
             bw.write(nota.getID().getObject1() + "#" + nota.getID().getObject2() + "#" + nota.getNota() + "#"
                     + nota.getSaptamanaPredare() + "#" + nota.getFeedback() + "\n");
         } catch (IOException ioe) {
@@ -45,15 +49,16 @@ public class NotaFileRepository extends AbstractFileRepository<Pair<String, Stri
     }
 
     protected void writeToFileAll() {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename, false))) {
-            super.entities.values().forEach(nota -> {
+        try  {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(filename, false));
+            for(Nota nota: super.entities.values()){
                 try {
                     bw.write(nota.getID().getObject1() + "#" + nota.getID().getObject2() + "#" + nota.getNota()
                             + "#" + nota.getSaptamanaPredare() + "#" + nota.getFeedback() + "\n");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            });
+            };
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
