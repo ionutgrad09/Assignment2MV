@@ -25,7 +25,6 @@ public class AddStudentTests {
         assertEquals(0, this.service.saveStudent("2", "Dragos", 933));
     }
 
-
     @Test
     public void testAddStudentGroupNotOK() {
         try {
